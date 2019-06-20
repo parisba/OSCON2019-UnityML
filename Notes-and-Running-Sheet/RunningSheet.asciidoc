@@ -1,0 +1,116 @@
+// AI problem-solving with Unity and TensorFlow
+// ===========
+// Paris Buttfield-Addison <paris@secretlab.com.au>
+// v1.0, 20 June 2019
+
+
+= AI problem-solving with Unity and TensorFlow
+Paris Buttfield-Addison, Tim Nugent, Mars Geldard
+
+=== Overview
+
+This document provides an outline of the material from the tutorial https://conferences.oreilly.com/oscon/oscon-or/public/schedule/detail/76096[AI problem-solving with Unity and TensorFlow] from OSCON 2019.
+
+It's not really intended to stand-alone, without readers having attended the conference, but it could still be useful!
+
+
+=== Software
+
+We'll be working with a few pieces of software: Unity, the Unity Machine Learning Agents Toolkit, which requires TensorFlow, and a bunch of Python libraries.
+
+Everything we're working with will work on Windows or macOS, and most of it will probably work with Linux. 
+
+NOTE: We're not Linux experts, but we'll try our best to help you out with any problems you encounter if you're game enough to try this out on Linux.
+
+==== Unity
+To download Unity, visit the Unity website and grab the installer for your platform:
+
+* https://unity3d.com/get-unity/download/archive
+
+
+WARNING: We've pinned the version of Unity being used for this tutorial to **Unity 2019.1.7**. Everything will probably work with a newer version, but we make no guarantees. It's easier for everyone if you stick to the verison we suggest! 
+
+==== Unity Machine Learning Agents Toolkit
+
+The Unity Machine Machine Learning Agents Toolkit (ML-Agents) is an open-source suite of tools, including Unity plugins, Python scripts, and algorithm implementations, that enables the Unity environment to serve for both training and inference of intelligent agents.
+
+You can find ML-Agents on GitHub:
+
+* https://github.com/Unity-Technologies/ml-agents
+
+WARNING: We've pinned the version of ML-Agents being used for this tutorial to **ML-Agents Beta 0.8.1**. Everything will probably work with a newer version, but we make no guarantees. Using the same version of ML-Agents as us is probably more important than using the same version of Unity.
+
+Download the version of ML-Agents we'll be using here:
+
+* https://github.com/Unity-Technologies/ml-agents/releases/tag/0.8.1
+
+[[structure]]
+=== Structure
+
+We've structured this document, and the tutorial, as follows:
+
+. **Introduction to Unity**
++
+First, we'll introduce you to Unity, the game development environment that we'll be using to create simulations to perform machine learning with. 
++
+We'll spend a little time learning Unity, as a game developer would, so we're comfortable working with Unity for AI later on. There'll be no AI or ML in this section! 
++
+This material is covered in <<intro-to-unity>>.
+. **Exercise 1**
++
+TBD
++
+Exercise 1 is covered in <<exercise-one>>.
+. **Exercise 2**
++
+TBD
++
+Exercise 2 is covered in <<exercise-two>>.
+. **Exercise 3**
++
+TBD
++
+Exercise 3 is covered in <<exercise-three>>.
+. **Next Steps**
++
+We'll conclude with some advice on where to take your learning next, some suggested activities, and some challenges for you to complete in your own time.
++
+This material is covered in <<next-steps>>.
+
+=== Approach
+
+This tutorial has the following goals:
+
+* Teach the very basics of the Unity game engine
+* Explore a scene setup in Unity for both training and use of a ML model
+* Show how to train a model with TensorFlow (and Docker) using the Unity scene
+* Discuss the use of the trained model and potential applications
+* Show you how to train AI agents in complicated scenarios and make the real world better by leveraging the virtual
+
+
+[[intro-to-unity]]
+=== Introducing Unity
+
+We're not here to learn game development with Unity! We're here to explore machine learning! But... to do that, we need to understand how to use Unity.
+
+TIP: If you would like to learn Unity, check out our current books on Unity! _Mobile Game Development with Unity_ and _Unity Game Development Cookbook_! We're very proud of them.
+
+[[exercise-one]]
+=== Exercise 1
+
+This is Exercise 1.
+
+[[exercise-two]]
+=== Exercise 2
+
+This is Exercise 2.
+
+[[exercise-three]]
+=== Exercise 3
+
+This is Exercise 3.
+
+[[next-steps]]
+=== Next Steps
+
+This is next steos,
