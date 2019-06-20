@@ -13,6 +13,9 @@ This document provides an outline of the material from the tutorial https://conf
 
 It's not really intended to stand-alone, without readers having attended the conference, but it could still be useful!
 
+This document is sourced from, and accompanied by, the contents of the following GitHub repository:
+
+* https://github.com/parisba/OSCON2019-UnityML
 
 === Software
 
@@ -95,6 +98,15 @@ We're not here to learn game development with Unity! We're here to explore machi
 
 TIP: If you would like to learn Unity, check out our current books on Unity! _Mobile Game Development with Unity_ and _Unity Game Development Cookbook_! We're very proud of them.
 
+Steps to follow:
+. Create a new Unity project, using the 3D template.
+. Add a Sphere to the Scene using the GameObject -> 3D Object -> Sphere menu entry. Play the scene, and observe how nothing happens.
+. We want to make the ball fall on to a floor. So we need a floor. Add a Cube using the GameObject -> 3D Object -> Cube menu entry, then use the Scale Tool to stretch and flatten it, to make it a floor, and the Move Tool to place it below the Sphere.
+. Select the Sphere, and use the Inspector to add a Rigidbody Component to it. Tick the "Use Gravity" checkbox.
+. Play the scene, and observe that the ball now falls to the floor and stops. But we want it to bounce...
+.  
+
+
 [[exercise-one]]
 === Exercise 1
 
@@ -113,4 +125,4 @@ This is Exercise 3.
 [[next-steps]]
 === Next Steps
 
-This is next steos,
+This is next steps section!
