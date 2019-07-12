@@ -77,6 +77,14 @@ This tutorial has the following goals:
 * Discuss the use of the trained model and potential applications
 * Show you how to train AI agents in complicated scenarios and make the real world better by leveraging the virtual
 
+NOTE: We consider learning Unity to be as important as learning ML-Agents.
+
+This is exercise in **applied** artificial intelligence and machine learning. The focus of this session is to make you comfortable using Unity and ML-Agents, so you can go forth and use your software engineering skills and machine learning skills, together with your Unity and ML-Agents knowledge, to build interesting and useful simulations.
+
+If you haven't done much AI or ML in the past, don't worry! We'll explain everything you need, and it should be clear what you need to learn next to explore and understand the ML side more.
+
+Today is about building fun things in Unity, with ML-Agents!
+
 [[anaconda-setup]]
 === Setting Up
 
@@ -469,9 +477,9 @@ public override void AgentAction(float[] vectorAction, string textAction)
 image::images/selfdrivingcartrack.png[]
 
 
-* **Environment** —— The Track
-* **Agent** —— The Car
-* **Policy** —— Convolutional Neural Network (as we're dealing with Images)
+* **Environment** ---- The Track
+* **Agent** ---- The Car
+* **Policy** ---- Convolutional Neural Network (as we're dealing with Images)
 
 // Good actions = rewards
 // Bad actions = penalties
@@ -497,8 +505,179 @@ TIP: We could also use some form of supervised learning, like imitation learning
 // Rewards should not be too sparse. Too far away in time and space to be reached by random exploration. Often need to subdivide the task into small subtargets. Learn the basics first, and then improve on top of it. This is called HIERARCHICAL LEARNING (Curriculum Learning in Unity).
 
 
+We're going to start with something that's conceptually pretty straightforward: we want to build a simulated car that can autonomously drive around a track.
 
+* The **Environment** will be a race track.
+* The **Agent** will be a car.
+* The **Goal** will be the car autonomously driving around the track.
+* The **Actions** available will be steering left and right. The car's throttle will happen automatically.
 
+To make this happen, we need to answer some questions. Those questions are:
+
+* **Question 1**: What sort of learning to do we want to use?
+* **Question 2**: What Observations will the Agent have about the Environment?
+
+To answer **Question 1**, we'll take a look at two specific approaches: <<activity3.1,Reinforcement Learning>>, and <<activity3.2,Imitation Learning>>. We'll look at Reinforcement Learning in passing, showing off how it works, because it can take quite a long time to train. We'll look at Imitation Learning in more detail, because we can get things working quicker.
+
+To answer **Question 2**, we need to think about the knowledge the Agent needs in order to be able to drive the track. At the simplest level, it needs to know the following things:
+
+* whether it has left the road
+* where it is on the road, in relation to the sides of the road
+
+We can give it this knowledge in a variety of ways. The first, perhaps most obvious way if you approach this simulation from the perspective of a game developer, is to give it a whole bunch of raycasts ---- essentially perfect laser measuring tools ---- to see how far away it is from things, and send those raycasts out from a variety of directions on the car.
+
+The second, and perhaps most obvious way if you approach this from the perspective of a computer person or generally observant person, is to use cameras. 
+
+==== Setting up the Car as an Agent
+
+. Create a new C# Sharp in the Racer project. We named ours CarAgent.cs. Delete everything but the imports (the `using` statements).
+. Add `MLAgents` to the imports at the top:
++
+[source,csharp]
+----
+using MLAgents;
+----
+. Next, set our `namespace` to the `UnityStandardAssets.Vehicles.Car`, and create a `class` for the `CarAgent`, descending from `Agent` (as all Agents in ML-Agents do):
++
+[source,csharp]
+----
+namespace UnityStandardAssets.Vehicles.Car {
+	[RequireComponent(typeof(CarController))]
+	public class CarAgent : Agent {
+	
+	}
+----
+. Add some member variables inside the `class` (we'll explain what each is for in a moment):
++
+[source,csharp]
+----
+		private CarController carController;
+		private Rigidbody rigidBody;
+		
+		private float lapTime = 0;
+		private float bestLapTime = 0;
+		private bool isCollided = false;
+		private bool startLinePassed = false;
+		
+		public Transform resetPoint;
+		public Transform[] trackWaypoints = Transform[14];
+		
+		public bool agentIsTraining = false;
+----
++
+`carController` and `rigidBody` store references to bits of the car. `lapTime` will be used to store the current lap time, `bestLapTime` will store the best lap time of the current run (it's not persisting anything anywhere or anything).
++
+We will use `isCollided` by setting it to true when the car collides with something that it shouldn't (as far as what we want it to learn goes). `startLinePassed` will be used as a flag to figure out if we've lapped the course.
++
+`resetPoint` and `trackWaypoints` are `public`, which as you may remember means they get exposed in the _Inspector_. We'll use `resetPoint` to store a `Transform` representing the reset point for the car, and we'll use `trackWaypoints` to store an array of `Transform`s, representing a path around the track. We'll use those to reset the car back to nearby where it crashed (which, in this context, is colliding with something) by picking the closest one when a crash happens.
++ 
+`agentIsTraining` will be used (and exposed in the _Inspector_) to change the car's behaviour a little bit when we're training, vs when we're not. We could this by asking the ML-Agents system what its brain settings are, but we're doing it this way to make it clearer what's going on.
+. Next, we need an `Awake()` function:
++
+[source,csharp]
+----
+public void Awake() {
+	carController = GetComponent<CarController>();
+	rigidBody = GetComponent<Rigidbody>();
+}
+----
+. Next, we need to create an `AgentReset()` function, which is going to be a long one. We'll do a few things in this function:
++
+	- reset the car to the closest waypoint if we're in training (as defined by the `agentIsTraining` `bool` that we created)
+	- reset to the `resetPoint` (which we'll set to the beginning of the track) if we're not training
+	- and, regardless of the status of `agentIsTraining`, set the car's velocity to `0`, and set `isCollided` to `false` (because if we're resetting its position to a known good position----one of the waypoints, or the start position----then we know it's not colliding)
+. TODO add the code from `AgentReset()` here.
+. Next, we'll add a `FixedUpdate()` function, which is called every TODO, and use that to update the `lapTime`:
++
+[source,csharp]
+----
+void FixedUpdate() {
+	lapTime += Time.fixedDeltaTime;
+}
+----
+. TODO OnTriggerExit?
+. We'll also add a `CollectObservations()` function, which is where any Observations we want the car to have can be collected. We'll leave it empty right now:
++
+[source,csharp]
+----
+public override void CollectObservations() {
+	// observations might be collected here
+}
+----
+. Back in Unity, add the CarAgent.cs script to the Car. 
+. TODO setup the public vars in the inspector of the Car.
+
+==== Creating an Academy for the Car
+
+We don't need much in the Academy for the car, because TODO:
+
+. Create a new C# Script called CarAcademy.cs
+. Remove everything but the imports (the `using` statements), and add the following after the existing three:
++
+[source,csharp]
+----
+using MLAgents;
+----
+. And then add a `class`:
++
+[source,csharp]
+----
+public class CarAcademy : Academy {
+	// academy things go here
+}
+----
++
+We don't actually need to put anything in our academy!
+. Create an empty GameObject in the scene, and attach the CarAcademy.cs script to it. You should see something that looks like <<fig:caracademy>>.
+. TODO explain?
+
+TODO: fig:caracademy
+
+==== Letting the Car take Actions
+
+. An important part of allowing the car to behave as we described above is letting it know when it's collided with something that it shouldn't have. We'll add `bool` `isCollided` to the CarAgent.cs script, which we'll set when the car has collided with something bad. Add the following member variable to the `class` `CarAgent`:
++
+[source,csharp]
+----
+	private bool isCollided = false;
+----
+
+. To let the car take actions, we need to set up its `AgentAction()` funtion. Inside the CarAgent.cs file, find the `AgentAction()` function, and add the following:
++
+[source,csharp]
+----
+		float h = vectorAction[0];
+		carController.Move(h, 1, 0, 0);
+----
++
+This snippet of code creates a `float`, `h`, and stores the first component of the `vectorAction[0]` array in it. We then pass `h` into the `Move` function of our `carController`, which is TODO.
++
+We also send in `1`, to represent TODO, `0` for TODO, and `0` for todo. This is interesting we need to do control the car using `AgentAction()`. 
+. Next, we need to add a new function called `OnTriggerEnter()`, which is automatically called by Unity when the object the script is attached to collides with something (remember our bouncing ball, from earlier!) Create a new function (still in CarAgent.cs):
++
+[source,csharp]
+----
+private void OnTriggerEnter(Collider other) {
+	// we'll put some code here in a moment
+}
+----
+. Inside this function need set the `isCollided` `bool` that we created earlier to `true`, because if this function was called at all, then we are, in fact, collided! Add the following inside the new function:
++
+[source,csharp]
+----
+	isCollided = true;
+----
+
+ 
+[[activity3.1]]
+==== Activity 3.1: Car + Reinforcement Learning
+
+TODO (example, not a full activity)
+
+[[activity3.2]]
+==== Activity 3.2: Car + Imitation Learning
+
+TODO
 
 [[Activity-Four]]
 === Activity 4: Building a robot warehouse
@@ -588,6 +767,62 @@ Make sure you replace the "WarehouseOneCrate_Learning" with the name of your Bra
 +
 Make sure you increment the number of the run-ID, so we can keep track of what we're doing. When you execute this, you'll be asked to press play in Unity.
 
+[[activity5]]
+=== Activity 5: Bouncing Beepo (Reinforcement Learning)
+
+In this activity, we're going to take the warehouse buggy, "Beepo", and give him some treats. The only problem is the treats are up high in the air, and Beepo will need to bounce and jump to get them!
+
+To do this, we're going to use reinforcement learning, and some vector observations.
+
+. Create a BeepoBounceTreat.cs C# script:
++
+[source,csharp]
+----
+TODO
+----
++ 
+This is just a plain old `MonoBehaviour`. It makes the treat rotate like a powerup from a video game, it adds a `Respawn()` function that "respawns" the treat by making it move somewhere else, and it adds an `OnTriggerEnter()` function so we can detect when the treat collides with the agent (Beepo), and give Beepo a reward and then tell the treat to respawn (which moves it somewhere else, trapping Beepo in a perpetual cycle of treats).
+. Create a BeepoBounceAcademy.cs C# script:
++
+[source,csharp]
+----
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using MLAgents;
+
+public class BeepoBounceAcademy : Academy {
+
+    public float gravityMultiplier = 1f;
+
+    public override void InitializeAcademy()
+    {
+        Physics.gravity = new Vector3(0,-9.8f*gravityMultiplier,0);
+    }
+
+    public override void AcademyReset()
+    {
+
+
+    }
+
+    public override void AcademyStep()
+    {
+
+
+    }
+
+}
+----
++
+This Academy sets gravity to a multiplier that we can control on the academy, via the _Inspector_.
+. Next, create a BeepoBounceAgent.cs C# script:
++
+[source,csharp]
+----
+TODO
+----
++ TODO description
 
 [[next-steps]]
 === Next Steps
