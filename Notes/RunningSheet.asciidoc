@@ -17,9 +17,7 @@ This document provides an outline of the material from the tutorial https://conf
 
 It's not really intended to stand-alone, without readers having attended the conference, but it could still be useful!
 
-This document is sourced from, and accompanied by, the contents of the following GitHub repository:
-
-* https://github.com/parisba/OSCON2019-UnityML
+This document is sourced from, and accompanied by, the contents of this GitHub repository: https://github.com/parisba/OSCON2019-UnityML
 
 WARNING: This document isn't intended to explain why everything works the way it does. This document is here to help you keep your place with the tutorial content at OSCON. It's so you don't fall behind, and have something to refer to if you need to catch up. We recommend you keep your own notes about why things work the way they do.
 
@@ -828,4 +826,7 @@ TODO
 === Next Steps
 
 This is next steps section!
+ 
+ [[fig:IMG_4540]]
+image::images/IMG_4540.JPG[]
  
